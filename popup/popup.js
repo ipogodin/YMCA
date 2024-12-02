@@ -20,14 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const composeTextbox = document.getElementById("composeTextbox");
   const generateButton = document.getElementById("btnGenerate");
   const loadingIndicator = document.getElementById("loading");
-  const queryForm = document.getElementById("queryForm");
+  const videoTitle = document.getElementById("videoTitle");
+  const videoDescription = document.getElementById("videoDescription");
+  const refetchDescriptionButton = document.getElementById("btnFetchDescription");
 
-  // Generate button click handler
+  // execute prerequisites
+  loadVideoInfo(videoTitle, videoDescription);
+
+  // Generate-button click handler
   generateButton.addEventListener("click", async () => {
     // Display loading indicator
     const storedRequest = queryForm.value;
-    // TODO =deleteme
-    console.log("User request : " + storedRequest);
     loadingIndicator.style.display = "block";
     composeTextbox.value = "Generating comment, please wait...";
 
@@ -36,6 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await sendMessageToBackground({
         action: "generateComment",
         prompt: storedRequest,
+        title: videoTitle.value,
+        description: videoDescription.value,
       });
 
       // Update the UI with the response
@@ -53,7 +58,26 @@ document.addEventListener("DOMContentLoaded", () => {
       loadingIndicator.style.display = "none";
     }
   });
+
+
+  refetchDescriptionButton.addEventListener("click", () => {
+    loadVideoInfo(videoTitle, videoDescription);
+  });
 });
+
+function loadVideoInfo(videoTitle, videoDescription) {
+    // TODO : replace with sendMessageToBackground
+    chrome.runtime.sendMessage({ action: "testGetVideoInfo" }, (response) => {
+      if (response) {
+        console.log("Response from background.js:", response);
+        videoTitle.value = response.title;
+        videoDescription.value = response.description;
+      } else {
+        videoTitle.value = "Failed to load title, retry with the button below";
+        videoDescription.value = "Failed to load description, retry with the button below";
+      }
+    });
+}
 
 function sendMessageToBackground(message) {
   return new Promise((resolve, reject) => {
