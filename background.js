@@ -80,9 +80,10 @@ async function handleGenerateComment(message, sendResponse) {
     // TODO = deleteme
     console.log("Received request : " + message.title + " d: " + message.description + ", p: " + message.prompt);
 
-    const context = "Ignore non-readable text. Avoid any toxic language and be as constructive as possible."
-                                      + " Video title reads as, " + message.title
-                                      + ". And description reads as, " + message.description + "."
+    const context = "I would like to generate the comment for youtube video."
+        + " Video title reads as, " + message.title
+        + ". And description reads as, " + message.description + ".";
+
 
     // Simulate a long-running task
     const writer = await ai.writer.create({
