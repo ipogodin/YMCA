@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="sidepanel.css" />
+</head>
+<body>
+<textarea
+        id="videoTitle"
+        placeholder="Loading video title..."
+></textarea>
+<textarea
+        id="videoDescription"
+        placeholder="Loading video description..."
+></textarea>
+<span>Optional query goes here:</span>
+<textarea
+        id="queryForm"
+        placeholder='Optional prompt if you like to customize the comment'
+        cols="30"
+        rows="5"
+></textarea>
+<div id="loading" class="text" hidden><span class="blink">...</span></div>
+<div id="error" class="text" hidden></div>
+<textarea
+        id="composeTextbox"
+        placeholder="Generated comment will appear here"
+        cols="30"
+        rows="5"
+></textarea>
+<button id="btnGenerate">Generate Comment</button>
+<button id="btnFetchDescription">Repopulate video description</button>
+<div hidden>
+    <button id="btnOriginal">Be Original</button>
+    <button id="btnSupportAuthor">Support Author</button>
+    <button id="btnSupportTop">Support Top Commenters</button>
+</div>
+<script src="sidepanel.js" type="module"></script>
+</body>
+</html>

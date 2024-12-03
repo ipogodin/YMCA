@@ -1,4 +1,57 @@
+//imports
+import {MESSAGE_TYPES, APP_NAME} from "./constants.js";
 
+// const declaration
+const YOUTUBE_ORIGIN = 'https://www.youtube.com';
+const emptyPage = 'sidepanel/empty.html';
+const sidepanelPage = 'sidepanel/sidepanel.html';
+
+
+// side panel operations
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch((error) => console.error(error));
+
+chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
+  if (!tab.url) return;
+  const url = new URL(tab.url);
+  // Enables the side panel on youtube.com
+  if (url.origin === YOUTUBE_ORIGIN) {
+    await chrome.sidePanel.setOptions({
+      tabId,
+      path: sidepanelPage,
+      enabled: true
+    });
+  } else {
+    // Disables the side panel on all other sites
+    await chrome.sidePanel.setOptions({
+      tabId,
+      enabled: false
+    });
+  }
+});
+
+// message processing
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "summarizeComments") {
+        fetchTopComments(request.videoId).then((comments) => {
+            // Replace with Chrome AI API summarization
+            const summary = "Summary: " + comments;
+            sendResponse({ summary });
+        });
+        return true; // Keep the message channel open for async response
+    }
+    if (request.action == MESSAGE_TYPES.GET_VIDEO_INFO) {
+        getVideoInfo(sendResponse);
+        return true;
+    }
+    if (request.action === MESSAGE_TYPES.GENERATE_COMMENT) {
+        handleGenerateComment(request, sendResponse);
+        return true; // Return true immediately to keep the message port open
+    }
+});
+
+/*
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "generateOriginal") {
         // TODO: Replace with Chrome AI API call
@@ -19,6 +72,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ rewrittenComment });
     }
 });
+*/
 // TODO: ignored for now
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeComments") {
@@ -29,8 +83,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true; // Keep the message channel open for async response
     }
-    if (request.action == "testGetVideoInfo") {
-        testGetVideoInfo(sendResponse);
+    if (request.action == "getVideoInfo") {
+        getVideoInfo(sendResponse);
         return true;
     }
     if (request.action === "generateComment") {
@@ -39,7 +93,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-async function testGetVideoInfo(sendResponse) {
+async function getVideoInfo(sendResponse) {
     try {
         // Query the active tab
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -54,7 +108,7 @@ async function testGetVideoInfo(sendResponse) {
                 console.log("YouTube video tab detected:", activeTab.url);
 
                 // Send message to content.js
-                chrome.tabs.sendMessage(activeTab.id, { action: "getVideoInfo" }, (response) => {
+                chrome.tabs.sendMessage(activeTab.id, { action: "collectVideoInfo" }, (response) => {
                     if (chrome.runtime.lastError) {
                         console.error("Error sending message to content script:", chrome.runtime.lastError.message);
                         sendResponse({ error: "Content script not found or not loaded" });
