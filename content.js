@@ -1,15 +1,36 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "fillComment") {
-        // TODO placeholder for the comment modifications
-        const commentBox = document.querySelector("#placeholder-for-comment-box");
-        if (commentBox) {
-            commentBox.value = request.comment;
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "injectComment") {
+        injectComment(message.comment)
+        .then((response) => {
             sendResponse({ success: true });
-        } else {
-            sendResponse({ success: false });
-        }
+        })
+        .catch((error) => {
+            sendResponse({
+                success: false,
+                error: "Unable to inplace comment into a comment box",
+            });
+        });
+        // Return true to keep the message channel open for async response
+        return true;
     }
 });
+
+async function injectComment(comment) {
+    const inactiveCommentBox = document.querySelector('#placeholder-area yt-formatted-string');
+    if (inactiveCommentBox) {
+        inactiveCommentBox.click(); // activating for comments input
+    }
+    await waitForElement('#contenteditable-root');
+
+    const commentBox = document.querySelector('#contenteditable-root');
+    commentBox.innerText = comment;
+
+    commentBox.focus();
+    const inputEvent = new Event('input', { bubbles: true });
+    commentBox.dispatchEvent(inputEvent);
+    commentBox.blur();
+
+}
 
 // Function to get the video title with exception handling
 function getVideoTitle() {
