@@ -82,11 +82,8 @@ function waitForElement(selector, timeout = 5000) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "getVideoInfo") {
-    // TODO remove
-    console.log("Hello there");
+  if (message.action === "collectVideoInfo") {
 
-    // Use an async IIFE (Immediately Invoked Function Expression) to handle async logic
     (async () => {
       try {
         const videoTitle = getVideoTitle(); // Assuming this is synchronous
