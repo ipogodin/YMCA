@@ -113,7 +113,7 @@ main {
 }
 
 /* Highlight specific text areas */
-.textarea-title {
+.textarea-static {
     background-color: #fffbea;
 }
 
@@ -152,13 +152,14 @@ main {
 
 /* Frequently Used Buttons */
 .button.primary.emphasized {
-    background-color: #4caf50; /* Green for action buttons */
-    color: white;
+    background-color: #99c69a; /* Green for action buttons */
+    color: black;
     font-size: 16px; /* Slightly larger font for emphasis */
 }
 
 .button.primary.emphasized:hover {
     background-color: #45a049; /* Slightly darker on hover */
+    color: white;
 }
 
 /* Rarely Used Button */

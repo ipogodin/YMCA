@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const collapsibleContent = document.getElementById("optionalQueryContent");
   const helpIcon = document.getElementById("helpIcon");
   const helpTooltip = document.getElementById("helpTooltip");
+  const errorTextArea = document.getElementById("error");
 
   // execute prerequisites
   loadVideoInfo(videoTitle, videoDescription);
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Display loading indicator
     const storedRequest = queryForm.value;
     show(loadingIndicator);
+    hide(errorTextArea);
     commentTextbox.value = "Generating comment, please wait...";
 
     try {
@@ -45,13 +47,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.success) {
         commentTextbox.value = response.comment;
       } else {
-        showError(`Error: ${response.error}. Please retry.`);
+        errorTextArea.textContent = `Error: ${error}. Please retry.`;
+        show(errorTextArea);
         commentTextbox.value = "";
       }
     } catch (error) {
       // Handle errors
-      console.error("Error communicating with background script:", error);
-      showError(`Error: ${error}. Please retry.`);
+      console.log("Error communicating with background script:", error);
+      errorTextArea.textContent = `Error: ${error}. Please retry.`;
+      show(errorTextArea);
     } finally {
       // Hide loading indicator
       hide(loadingIndicator);
@@ -95,38 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-async function createComment(request) {
-    // Display loading indicator
-    const storedRequest = queryForm.value;
-    show(loadingIndicator);
-    commentTextbox.value = "Generating comment, please wait...";
-
-    try {
-      // Send message to background script to generate a comment
-      const response = await sendMessageToBackground({
-        action: MESSAGE_TYPES.GENERATE_COMMENT,
-        prompt: storedRequest,
-        title: videoTitle.value,
-        description: videoDescription.value,
-      });
-
-      // Update the UI with the response
-      if (response.success) {
-        commentTextbox.value = response.comment;
-      } else {
-        commentTextbox.value = "I am sorry. Cannot generate comment for this video at this time";
-      }
-    } catch (error) {
-      // Handle errors
-      console.error("Error communicating with background script:", error);
-      commentTextbox.value = "";
-      showError(`Error: ${error}. Please retry.`);
-    } finally {
-      // Hide loading indicator
-      hide(loadingIndicator);
-    }
-}
-
 /*
  videoTitle : text area to load video into
  videoDescription: text area to load video into
@@ -158,12 +130,6 @@ function sendMessageToBackground(message) {
       }
     });
   });
-}
-
-function showError(error) {
-  show(elementError);
-  hide(elementLoading);
-  elementError.textContent = error;
 }
 
 function show(element) {
