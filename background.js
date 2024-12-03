@@ -31,16 +31,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
   }
 });
 
-// message processing
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeComments") {
-        //TODO: implement
-        fetchTopComments(request.videoId).then((comments) => {
-            // Replace with Chrome AI API summarization
-            const summary = "Summary: " + comments;
-            sendResponse({ summary });
-        });
-        return true; // Keep the message channel open for async response
+        console.log("Not implemented, tbd");
+        return false;
     }
     if (request.action == MESSAGE_TYPES.GET_VIDEO_INFO) {
         getVideoInfo(sendResponse);
@@ -48,7 +42,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     if (request.action === MESSAGE_TYPES.GENERATE_COMMENT) {
         handleGenerateComment(request, sendResponse);
-        return true; // Return true immediately to keep the message port open
+        return true;
     }
     if (request.action === "videoChanged") {
         chrome.runtime.sendMessage({
