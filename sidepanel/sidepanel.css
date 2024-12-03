@@ -18,9 +18,10 @@ body {
     display: flex;
     align-items: center;
     padding: 8px 16px;
-    background-color: #ff0000; /* YouTube Red */
+    background: linear-gradient(to right, #ff0000, #ff4d4d); /* Gradient Red */
     color: white;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 4px #ff0000; /* Red accent */
     height: 60px;
 }
 
@@ -108,13 +109,14 @@ main {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Gray Button */
 .button.primary {
-    background-color: #ff0000; /* YouTube Red */
-    color: white;
+    background-color: #ccc; /* Light Gray */
+    color: #1f1f1f;
 }
 
 .button.primary:hover {
-    background-color: #d90000; /* Darker Red */
+    background-color: #bbb;
 }
 
 .button.secondary {
@@ -143,9 +145,8 @@ main {
 
 /* Loading Image */
 #loading img {
-    width: 50px; /* Adjust the width as needed */
-    height: 50px; /* Keep proportions consistent */
-    object-fit: contain; /* Ensures the image doesn't stretch or distort */
+    height: 50px;
+    object-fit: contain;
     display: block;
     margin: 0 auto; /* Center the loading image */
 }
