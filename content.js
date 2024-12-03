@@ -83,28 +83,114 @@ function waitForElement(selector, timeout = 5000) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "collectVideoInfo") {
-
-    (async () => {
-      try {
-        const videoTitle = getVideoTitle(); // Assuming this is synchronous
-        const videoDescription = await getVideoDescription(); // Await the async function
-
-        // Respond with video info
-        sendResponse({
-          title: videoTitle,
-          description: videoDescription,
-        });
-      } catch (error) {
-        console.error("Error handling getVideoInfo request:", error.message);
+      collectVideoInfo()
+      .then((videoInfo) => {
+        sendResponse(videoInfo);
+      })
+      .catch((error) => {
         sendResponse({
           title: null,
           description: null,
           error: "Unable to fetch video information",
         });
-      }
-    })();
+      });
 
     // Return true to keep the message channel open for async response
     return true;
   }
 });
+
+// video data collection
+
+let lastKnownTitle = "";
+let lastKnownDescription = "";
+/**
+ * Collects video information by fetching the title and description.
+ * @returns {Promise<{ title: string, description: string }>} A promise resolving to the video info.
+ */
+async function collectVideoInfo() {
+  try {
+    const videoTitle = getVideoTitle(); // Assuming this is synchronous
+    const videoDescription = await getVideoDescription(); // Await the async function
+
+    // Update last known values
+    lastKnownTitle = videoTitle;
+    lastKnownDescription = videoDescription;
+
+    return {
+        title: videoTitle,
+        description: videoDescription
+    };
+  } catch (error) {
+    console.error("Error collecting video info:", error.message);
+    throw new Error("Unable to fetch video information");
+  }
+}
+
+// page change observer
+
+// observer on page loaded another video
+let lastKnownUrl = window.location.href;
+const observer = new MutationObserver(() => {
+  const videoTitle = document.querySelector('#title h1 yt-formatted-string')?.textContent.trim();
+  const videoUrl = window.location.href;
+
+  if (videoUrl !== lastKnownUrl) {
+    console.log("video has changed");
+    lastKnownUrl = videoUrl;
+    // Notify background script with updated video info
+    videoWasChanged();
+  }
+});
+
+/**
+ * Function to check if the video was changed.
+ * Retries up to 3 times with a 1-second interval.
+ */
+async function videoWasChanged() {
+  const maxAttempts = 3;
+  const delayBetweenAttempts = 1000; // 1 second
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      // Fetch the current video title and description
+      const currentTitle = getVideoTitle(); // Assuming synchronous
+      const currentDescription = await getVideoDescription(); // Assuming asynchronous
+
+      if (currentTitle !== lastKnownTitle || currentDescription !== lastKnownDescription) {
+        // Update the last known values
+        lastKnownTitle = currentTitle;
+        lastKnownDescription = currentDescription;
+
+        // Send message with new video info
+        chrome.runtime.sendMessage({
+          action: "videoChanged",
+          videoInfo: {
+            title: currentTitle,
+            description: currentDescription,
+          },
+        });
+
+        console.log("Video info updated:", { title: currentTitle, description: currentDescription });
+        return; // Exit function once a change is detected
+      } else {
+        console.log(`Attempt ${attempt}: No change detected.`);
+      }
+    } catch (error) {
+      console.error(`Attempt ${attempt} failed:`, error.message);
+    }
+
+    // Wait before retrying, if not the last attempt
+    if (attempt < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, delayBetweenAttempts));
+    }
+  }
+  console.log("Max attempts reached. No changes detected.");
+}
+
+// Start observing changes in the DOM
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
+});
+
