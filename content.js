@@ -16,20 +16,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function injectComment(comment) {
+    // comment box will be non visible by default,
+    // retrieving it
     const inactiveCommentBox = document.querySelector('#placeholder-area yt-formatted-string');
     if (inactiveCommentBox) {
         inactiveCommentBox.click(); // activating for comments input
     }
+
+    // getting the actual comment box to fill in
+    // the comment
     await waitForElement('#contenteditable-root');
 
     const commentBox = document.querySelector('#contenteditable-root');
     commentBox.innerText = comment;
 
+    // enabling "comment" button in youtube, as it is blur
+    // by default
     commentBox.focus();
     const inputEvent = new Event('input', { bubbles: true });
     commentBox.dispatchEvent(inputEvent);
     commentBox.blur();
-
 }
 
 // Function to get the video title with exception handling
