@@ -1,14 +1,22 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" type="text/css" href="sidepanel.css" />
-    <title>YouTube Mentor Comment Assistant</title>
+    <title>YMCA</title>
 </head>
 <body>
 <header class="header">
     <img src="images/logo.png" alt="YouTube Mentor Comment Assistant Logo" class="logo" />
     <span class="app-name">YouTube Mentor Comment Assistant</span>
+    <img id="helpIcon" src="images/help.png" alt="Help" class="help-icon" />
 </header>
 <main>
+    <div id="helpTooltip" class="tooltip hidden">
+        <p>
+            - Click the "Generate Comment" button to start.<br />
+            - Use "Fill Comment" to insert it into the YouTube comment box.<br />
+            - If the video title or description is not displayed, click "Refresh Video Info".
+        </p>
+    </div>
     <div class="section">
         <label for="videoTitle" class="label">Video Title</label>
         <textarea
@@ -29,18 +37,21 @@
                 class="input"
         ></textarea>
     </div>
-    <div class="section">
-        <label for="queryForm" class="label">Optional Query</label>
-        <textarea
-                id="queryForm"
-                placeholder="Optional prompt to customize the comment"
-                cols="30"
-                rows="3"
-                class="input"
-        ></textarea>
+    <div class="collapsible-section">
+        <button id="toggleOptionalQuery" class="toggle-button">Input Optional Query</button>
+        <div id="optionalQueryContent" class="collapsible-content hidden">
+            <label for="queryForm" class="label">Optional Query</label>
+            <textarea
+                    id="queryForm"
+                    placeholder="Provide a prompt to tailor your comment perfectly"
+                    cols="30"
+                    rows="3"
+                    class="input"
+            ></textarea>
+        </div>
     </div>
-    <div id="loading" hidden>
-        <img src="images/loading.gif" alt="Loading..." />
+    <div id="loading" class="image-container" hidden>
+        <img src="images/loading.gif" alt="Loading..." class="cropped-image" />
     </div>
     <div id="error" class="text error"></div>
     <div class="section">
@@ -54,9 +65,9 @@
         ></textarea>
     </div>
     <div class="button-group">
-        <button id="btnGenerate" class="button primary">Generate Comment</button>
-        <button id="btnFetchDescription" class="button secondary">Refresh Video Info</button>
-        <button id="btnFillComment">Fill Comment</button>
+        <button id="btnGenerate" class="button primary emphasized">Generate Comment</button>
+        <button id="btnFillComment" class="button primary emphasized">Fill Comment</button>
+        <button id="btnFetchDescription" class="button secondary tertiary">Refresh Video Info</button>
     </div>
 </main>
 <script src="sidepanel.js" type="module"></script>
