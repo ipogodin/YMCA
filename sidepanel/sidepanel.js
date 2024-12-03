@@ -76,7 +76,7 @@ async function createComment(request) {
       if (response.success) {
         composeTextbox.value = response.comment;
       } else {
-        composeTextbox.value = `Error: ${response.error}`;
+        composeTextbox.value = "Cannot generate comment for this video at this time";
       }
     } catch (error) {
       // Handle errors

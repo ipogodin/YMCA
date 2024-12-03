@@ -38,12 +38,22 @@ async function getVideoDescription() {
     await waitForElement('#description-inline-expander yt-attributed-string span span');
 
     // Read the expanded description
-    const descriptionElement = document.querySelector('#description-inline-expander yt-attributed-string span span');
-    const description = descriptionElement
-        // removing newlines and special characters
-        ? descriptionElement.textContent.replace(/[^a-zA-Z0-9 ]/g, ' ').trim()
-        : "Description not found";
-    console.log("Full Description:", description);
+    let fullDescription = "";
+    const parentElement = document.querySelector('#description-inline-expander yt-attributed-string span');
+    if (parentElement) {
+      const childSpans = parentElement.querySelectorAll('span');
+      // Concatenate the text content of all child spans
+      fullDescription = Array.from(childSpans)
+        .map(span => span.textContent.trim()) // Get the text content of each <span>
+        .join(' ')
+        .replace(/[^a-zA-Z0-9 ]/g, ' ') // Remove special characters
+        .replace(/\s+/g, ' ') // Remove multispaces
+        .trim();
+
+      console.log("Full Description:", fullDescription);
+    } else {
+      console.log("Description not found");
+    }
 
     // Locate the "Collapse" button
     const collapseButton = document.querySelector('#collapse');
@@ -52,7 +62,7 @@ async function getVideoDescription() {
       collapseButton.click();
     }
 
-    return description;
+    return fullDescription;
   } catch (error) {
     console.error("Error toggling description:", error.message);
     return null;
@@ -127,7 +137,7 @@ async function collectVideoInfo() {
   }
 }
 
-// page change observer
+// page/video change observer
 
 // observer on page loaded another video
 let lastKnownUrl = window.location.href;
@@ -146,6 +156,7 @@ const observer = new MutationObserver(() => {
 /**
  * Function to check if the video was changed.
  * Retries up to 3 times with a 1-second interval.
+ * Sends a message though background to a sidepanel for the video description and title update
  */
 async function videoWasChanged() {
   const maxAttempts = 3;
