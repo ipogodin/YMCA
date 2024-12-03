@@ -15,8 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   generateButton.addEventListener("click", async () => {
     // Display loading indicator
     const storedRequest = queryForm.value;
-    loadingIndicator.style.display = "block";
-    showLoading();
+    show(loadingIndicator);
     composeTextbox.value = "Generating comment, please wait...";
 
     try {
@@ -40,8 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
       composeTextbox.value = `Error: ${error}`;
     } finally {
       // Hide loading indicator
-      showResponse();
-      loadingIndicator.style.display = "none";
+      hide(loadingIndicator)
+      //showResponse();
     }
   });
 
@@ -82,13 +81,6 @@ function sendMessageToBackground(message) {
       }
     });
   });
-}
-
-function showLoading() {
-  buttonReset.removeAttribute('disabled');
-  hide(elementResponse);
-  hide(elementError);
-  show(elementLoading);
 }
 
 function showResponse(response) {
