@@ -1,39 +1,63 @@
-<!doctype html>
-<html>
+<html lang="en">
 <head>
     <link rel="stylesheet" type="text/css" href="sidepanel.css" />
+    <title>YouTube Mentor Comment Assistant</title>
 </head>
 <body>
-<textarea
-        id="videoTitle"
-        placeholder="Loading video title..."
-></textarea>
-<textarea
-        id="videoDescription"
-        placeholder="Loading video description..."
-></textarea>
-<span>Optional query goes here:</span>
-<textarea
-        id="queryForm"
-        placeholder='Optional prompt if you like to customize the comment'
-        cols="30"
-        rows="5"
-></textarea>
-<div id="loading" class="text" hidden><span class="blink">...</span></div>
-<div id="error" class="text" hidden></div>
-<textarea
-        id="composeTextbox"
-        placeholder="Generated comment will appear here"
-        cols="30"
-        rows="5"
-></textarea>
-<button id="btnGenerate">Generate Comment</button>
-<button id="btnFetchDescription">Repopulate video description</button>
-<div hidden>
-    <button id="btnOriginal">Be Original</button>
-    <button id="btnSupportAuthor">Support Author</button>
-    <button id="btnSupportTop">Support Top Commenters</button>
-</div>
+<header class="header">
+    <img src="images/logo.png" alt="YouTube Mentor Comment Assistant Logo" class="logo" />
+    <span class="app-name">YouTube Mentor Comment Assistant</span>
+</header>
+<main>
+    <div class="section">
+        <label for="videoTitle" class="label">Video Title</label>
+        <textarea
+                id="videoTitle"
+                placeholder="Loading video title..."
+                cols="30"
+                rows="2"
+                class="input textarea-title"
+        ></textarea>
+    </div>
+    <div class="section">
+        <label for="videoDescription" class="label">Video Description</label>
+        <textarea
+                id="videoDescription"
+                placeholder="Loading video description..."
+                cols="30"
+                rows="5"
+                class="input"
+        ></textarea>
+    </div>
+    <div class="section">
+        <label for="queryForm" class="label">Optional Query</label>
+        <textarea
+                id="queryForm"
+                placeholder="Optional prompt to customize the comment"
+                cols="30"
+                rows="3"
+                class="input"
+        ></textarea>
+    </div>
+    <div id="loading" hidden>
+        <img src="images/loading.gif" alt="Loading..." />
+    </div>
+    <div id="error" class="text error" hidden></div>
+    <div class="section">
+        <label for="composeTextbox" class="label">Generated Comment</label>
+        <textarea
+                id="composeTextbox"
+                placeholder="Generated comment will appear here"
+                cols="30"
+                rows="5"
+                class="input textarea-comment"
+        ></textarea>
+    </div>
+    <div class="button-group">
+        <button id="btnGenerate" class="button primary">Generate Comment</button>
+        <button id="btnFetchDescription" class="button secondary">Repopulate Video Description</button>
+    </div>
+</main>
 <script src="sidepanel.js" type="module"></script>
 </body>
 </html>
