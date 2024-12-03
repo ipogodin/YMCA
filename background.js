@@ -51,22 +51,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         })
         return true;
     }
+    if (request.action === MESSAGE_TYPES.FILL_COMMENT) {
+        injectCommentSection(request, sendResponse)
+        return true;
+    }
 });
+
+async function injectCommentSection(message, sendResponse) {
+    try {
+        // Query the active tab
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const activeTab = verifyYoutubeTabIsOpen(tabs);
+            if (activeTab) {
+                // Send message to content.js
+                chrome.tabs.sendMessage(activeTab.id, {
+                    action: "injectComment",
+                    comment: message.comment
+                    },
+                    (response) => {
+                    if (chrome.runtime.lastError) {
+                        console.error("Error sending message to content script:", chrome.runtime.lastError.message);
+                        sendResponse({ error: "Content script not found or not loaded" });
+                    } else {
+                        sendResponse(response);
+                    }
+                });
+            } else {
+                console.error("Active tab is not a YouTube video page.");
+                sendResponse({ error: "Active tab is not a YouTube video page." });
+            }
+        });
+    } catch (error) {
+        console.error("Error in testGetVideoInfo:", error.message);
+        sendResponse({ error: "An unexpected error occurred." });
+    }
+}
 
 async function getVideoInfo(sendResponse) {
     try {
         // Query the active tab
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (!tabs || tabs.length === 0) {
-                console.error("No active tabs found.");
-                sendResponse({ error: "No active tabs found." });
-                return;
-            }
-
-            const activeTab = tabs[0];
-            if (activeTab.url && activeTab.url.includes("youtube.com/watch")) {
-                console.log("YouTube video tab detected:", activeTab.url);
-
+            const activeTab = verifyYoutubeTabIsOpen(tabs)
+            if (activeTab) {
                 // Send message to content.js
                 chrome.tabs.sendMessage(activeTab.id, { action: "collectVideoInfo" }, (response) => {
                     if (chrome.runtime.lastError) {
@@ -87,6 +113,20 @@ async function getVideoInfo(sendResponse) {
     }
 }
 
+function verifyYoutubeTabIsOpen(tabs) {
+    if (!tabs || tabs.length === 0) {
+        console.error("No active tabs found.");
+        sendResponse({ error: "No active tabs found." });
+        return;
+    }
+
+    const activeTab = tabs[0];
+    console.log("YouTube video tab detected:", activeTab ? activeTab.url : ".. or not");
+    return activeTab.url && activeTab.url.includes("youtube.com/watch")
+        ? activeTab
+        : null;
+}
+
 // Define the async function for generating a comment
 // message contains: prompt, title, description
 async function handleGenerateComment(message, sendResponse) {
@@ -97,7 +137,6 @@ async function handleGenerateComment(message, sendResponse) {
     const context = "I would like to generate the comment for youtube video."
         + " Video title reads as, " + message.title
         + ". And description reads as, " + message.description + ".";
-
 
     // Simulate a long-running task
     const writer = await ai.writer.create({
@@ -125,13 +164,3 @@ async function handleGenerateComment(message, sendResponse) {
     sendResponse({ success: false, error: error.message });
   }
 }
-
-/*chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "generateComment") {
-    console.log("generateComment");
-    setTimeout(() => {
-      sendResponse({ success: true, comment: "Generated comment example" });
-    }, 2000); // Simulate delay
-    return true;
-  }
-});*/

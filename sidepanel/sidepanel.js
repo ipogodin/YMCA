@@ -3,10 +3,12 @@ import {MESSAGE_TYPES} from "../constants.js";
 document.addEventListener("DOMContentLoaded", () => {
   const videoTitle = document.getElementById("videoTitle");
   const videoDescription = document.getElementById("videoDescription");
-  const composeTextbox = document.getElementById("composeTextbox");
+  const commentTextbox = document.getElementById("commentTextbox");
   const generateButton = document.getElementById("btnGenerate");
   const loadingIndicator = document.getElementById("loading");
   const refetchDescriptionButton = document.getElementById("btnFetchDescription");
+  const fillCommentButton = document.getElementById("btnFillComment");
+
 
   // execute prerequisites
   loadVideoInfo(videoTitle, videoDescription);
@@ -25,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Display loading indicator
     const storedRequest = queryForm.value;
     show(loadingIndicator);
-    composeTextbox.value = "Generating comment, please wait...";
+    commentTextbox.value = "Generating comment, please wait...";
 
     try {
       // Send message to background script to generate a comment
@@ -38,14 +40,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Update the UI with the response
       if (response.success) {
-        composeTextbox.value = response.comment;
+        commentTextbox.value = response.comment;
       } else {
-        composeTextbox.value = `Error: ${response.error}`;
+        commentTextbox.value = `Error: ${response.error}`;
       }
     } catch (error) {
       // Handle errors
       console.error("Error communicating with background script:", error);
-      composeTextbox.value = `Error: ${error}`;
+      commentTextbox.value = `Error: ${error}`;
     } finally {
       // Hide loading indicator
       hide(loadingIndicator);
@@ -55,13 +57,24 @@ document.addEventListener("DOMContentLoaded", () => {
   refetchDescriptionButton.addEventListener("click", () => {
     loadVideoInfo(videoTitle, videoDescription);
   });
+
+  fillCommentButton.addEventListener("click", async () => {
+      const commentText = commentTextbox.value.trim();
+
+      const response = await sendMessageToBackground({
+        action: MESSAGE_TYPES.FILL_COMMENT,
+        comment: commentText
+      });
+
+      // ignore response data for now
+  });
 });
 
 async function createComment(request) {
     // Display loading indicator
     const storedRequest = queryForm.value;
     show(loadingIndicator);
-    composeTextbox.value = "Generating comment, please wait...";
+    commentTextbox.value = "Generating comment, please wait...";
 
     try {
       // Send message to background script to generate a comment
@@ -74,14 +87,14 @@ async function createComment(request) {
 
       // Update the UI with the response
       if (response.success) {
-        composeTextbox.value = response.comment;
+        commentTextbox.value = response.comment;
       } else {
-        composeTextbox.value = "Cannot generate comment for this video at this time";
+        commentTextbox.value = "I am sorry. Cannot generate comment for this video at this time";
       }
     } catch (error) {
       // Handle errors
       console.error("Error communicating with background script:", error);
-      composeTextbox.value = "";
+      commentTextbox.value = "";
       showError(`Error: ${error}. Please retry.`);
     } finally {
       // Hide loading indicator
