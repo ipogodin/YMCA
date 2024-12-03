@@ -1,3 +1,6 @@
+// unfortunately content.js does not support modules in chrome extensions
+// therefore all message topics are hardcoded here.
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "injectComment") {
         injectComment(message.comment)

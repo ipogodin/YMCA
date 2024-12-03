@@ -1,3 +1,6 @@
+//imports
+// some message topics are hardcoded due to the fact that
+// content.js does not support molularity -> does not support imports at this time
 import {MESSAGE_TYPES} from "../constants.js";
 
 document.addEventListener("DOMContentLoaded", () => {

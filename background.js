@@ -1,11 +1,11 @@
 //imports
+// some message topics are hardcoded due to the fact that
+// content.js does not support molularity -> does not support imports at this time
 import {MESSAGE_TYPES} from "./constants.js";
 
 // const declaration
 const YOUTUBE_ORIGIN = 'https://www.youtube.com';
-const emptyPage = 'sidepanel/empty.html';
 const sidepanelPage = 'sidepanel/sidepanel.html';
-
 
 // side panel operations
 chrome.sidePanel
@@ -131,14 +131,16 @@ function verifyYoutubeTabIsOpen(tabs) {
 // message contains: prompt, title, description
 async function handleGenerateComment(message, sendResponse) {
   try {
-    // TODO = deleteme
-    console.log("Received request : " + message.title + " d: " + message.description + ", p: " + message.prompt);
+    // debugging for the particular request that being sent
+    //console.log("Received request : " + message.title + " d: " + message.description + ", p: " + message.prompt);
 
     const context = "I would like to generate the comment for youtube video."
         + " Video title reads as, " + message.title
         + ". And description reads as, " + message.description + ".";
 
     // Simulate a long-running task
+    // the writing comment should be short, using the short option here
+    // the future functions can be expanded by additional radio buttons
     const writer = await ai.writer.create({
         length: "short",
         sharedContext: context,
