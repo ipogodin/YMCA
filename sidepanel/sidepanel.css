@@ -27,9 +27,9 @@ body {
 
 /* Logo */
 .logo {
-    height: 40px; /* Adjust size as needed */
+    height: 40px;
     width: auto;
-    margin-right: 12px; /* Spacing between logo and text */
+    margin-right: 12px;
 }
 
 /* Application Name */
@@ -63,6 +63,36 @@ main {
     color: #333;
     margin-bottom: 4px;
 }
+/* Collapsible block */
+.collapsible-section {
+    margin-bottom: 16px;
+}
+
+.toggle-button {
+    background-color: #ccc; /* Light Gray */
+    color: black;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.collapsible-content.hidden {
+    display: none;
+}
+
+.collapsible-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
 /* Inputs */
 .input {
@@ -94,8 +124,9 @@ main {
 /* Buttons */
 .button-group {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* Align frequently used buttons first */
     gap: 8px;
+    flex-wrap: wrap; /* Allow rare buttons to wrap if space is tight */
 }
 
 .button {
@@ -119,9 +150,34 @@ main {
     background-color: #bbb;
 }
 
+/* Frequently Used Buttons */
+.button.primary.emphasized {
+    background-color: #4caf50; /* Green for action buttons */
+    color: white;
+    font-size: 16px; /* Slightly larger font for emphasis */
+}
+
+.button.primary.emphasized:hover {
+    background-color: #45a049; /* Slightly darker on hover */
+}
+
+/* Rarely Used Button */
+.button.secondary.tertiary {
+    background-color: #e0e0e0; /* Neutral, unobtrusive background */
+    color: #666; /* Subtle text color */
+    font-size: 12px; /* Smaller font size */
+    flex-shrink: 0; /* Ensure it doesn’t stretch like primary buttons */
+    border-radius: 4px; /* Reduced radius to further distinguish */
+}
+
+.button.secondary.tertiary:hover {
+    background-color: #d0d0d0; /* Slight hover effect */
+}
+
+
 .button.secondary {
     background-color: #ccc;
-    color: black;
+    color: white;
 }
 
 .button.secondary:hover {
@@ -144,13 +200,59 @@ main {
 }
 
 /* Loading Image */
-#loading img {
-    height: 50px;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto; /* Center the loading image */
+.image-container {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 10 / 2; /* Optional: Maintain an aspect ratio */
+}
+
+.cropped-image {
+    width: 100%; /* Stretch the image to full width */
+    height: auto; /* Maintain aspect ratio */
+    position: absolute;
+    top: -125%; /* Shift the image upwards to hide the top */
+    object-fit: cover;
 }
 
 [hidden] {
   display: none;
+}
+
+/* Help Icon in Top-Right Corner */
+.help-icon {
+    position: absolute;
+    top: 8px; /* Distance from the top */
+    right: 8px; /* Distance from the right */
+    width: 20px; /* Set a fixed width */
+    height: 20px;
+    font-size: 16px;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.help-icon:hover {
+    color: #555;
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute; /* Position relative to the help icon */
+    top: 3%; /* Place tooltip below the icon */
+    right: 0; /* Align tooltip with the icon */
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 12px;
+    color: #333;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    z-index: 1000;
+}
+
+.tooltip.hidden {
+    display: none;
 }

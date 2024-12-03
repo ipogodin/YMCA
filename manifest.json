@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Youtube Mentor Comment Assistant",
   "version": "0.1",
-  "description": "YMCA: Redefining the Art of Commenting on YouTube—One Thought at a Time!",
+  "description": "YMCA: Redefining the Art of Commenting on YouTube — One Thought at a Time!",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

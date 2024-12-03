@@ -146,7 +146,7 @@ async function handleGenerateComment(message, sendResponse) {
     const prompt = message.prompt
         ? message.prompt
         : "Generate the comment to support author.";
-    // TODO debug
+    // debugging data
     console.log("prompt is : " + prompt);
     console.log("context is : " + context);
 
@@ -160,7 +160,8 @@ async function handleGenerateComment(message, sendResponse) {
     // Send the response after completion
     sendResponse({ success: true, comment: generatedComment });
   } catch (error) {
-    console.error("Error generating comment:", error);
+    // skipping error at this time as the generation is non-stable at this moment
+    console.log("Error generating comment:", error);
     sendResponse({ success: false, error: error.message });
   }
 }

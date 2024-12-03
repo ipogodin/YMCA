@@ -8,7 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadingIndicator = document.getElementById("loading");
   const refetchDescriptionButton = document.getElementById("btnFetchDescription");
   const fillCommentButton = document.getElementById("btnFillComment");
-
+  const toggleButton = document.getElementById("toggleOptionalQuery");
+  const collapsibleContent = document.getElementById("optionalQueryContent");
+  const helpIcon = document.getElementById("helpIcon");
+  const helpTooltip = document.getElementById("helpTooltip");
 
   // execute prerequisites
   loadVideoInfo(videoTitle, videoDescription);
@@ -42,12 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.success) {
         commentTextbox.value = response.comment;
       } else {
-        commentTextbox.value = `Error: ${response.error}`;
+        showError(`Error: ${response.error}. Please retry.`);
+        commentTextbox.value = "";
       }
     } catch (error) {
       // Handle errors
       console.error("Error communicating with background script:", error);
-      commentTextbox.value = `Error: ${error}`;
+      showError(`Error: ${error}. Please retry.`);
     } finally {
       // Hide loading indicator
       hide(loadingIndicator);
@@ -68,6 +72,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // ignore response data for now
   });
+
+  toggleButton.addEventListener("click", () => {
+      collapsibleContent.classList.toggle("hidden");
+
+      if (collapsibleContent.classList.contains("hidden")) {
+          toggleButton.textContent = "Show Optional Query";
+      } else {
+          toggleButton.textContent = "Hide Optional Query";
+      }
+  });
+
+  helpIcon.addEventListener("click", () => {
+      helpTooltip.classList.toggle("hidden");
+  });
+
+  // Hide help description
+  document.addEventListener("click", (event) => {
+      if (!helpIcon.contains(event.target) && !helpTooltip.contains(event.target)) {
+          hide(helpTooltip);
+      }
+  });
 });
 
 async function createComment(request) {
@@ -79,7 +104,7 @@ async function createComment(request) {
     try {
       // Send message to background script to generate a comment
       const response = await sendMessageToBackground({
-        action: "generateComment",
+        action: MESSAGE_TYPES.GENERATE_COMMENT,
         prompt: storedRequest,
         title: videoTitle.value,
         description: videoDescription.value,
