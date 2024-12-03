@@ -1,5 +1,5 @@
 //imports
-import {MESSAGE_TYPES, APP_NAME} from "./constants.js";
+import {MESSAGE_TYPES} from "./constants.js";
 
 // const declaration
 const YOUTUBE_ORIGIN = 'https://www.youtube.com';
@@ -34,6 +34,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
 // message processing
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeComments") {
+        //TODO: implement
         fetchTopComments(request.videoId).then((comments) => {
             // Replace with Chrome AI API summarization
             const summary = "Summary: " + comments;
@@ -49,47 +50,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         handleGenerateComment(request, sendResponse);
         return true; // Return true immediately to keep the message port open
     }
-});
-
-/*
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "generateOriginal") {
-        // TODO: Replace with Chrome AI API call
-        const comment = "This is a unique and original comment!";
-        sendResponse({ comment });
-    } else if (request.action === "supportAuthor") {
-        const comment = "Thank you for your amazing work! Keep it up!";
-        sendResponse({ comment });
-    } else if (request.action === "supportTop") {
-        const comment = "I agree with the top comments! Here's my take: ...";
-        sendResponse({ comment });
-    }
-});
-//TODO: ignored for now
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "rewriteComment") {
-        const rewrittenComment = "Rewritten: " + request.comment; // Replace with Chrome AI
-        sendResponse({ rewrittenComment });
-    }
-});
-*/
-// TODO: ignored for now
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "summarizeComments") {
-        fetchTopComments(request.videoId).then((comments) => {
-            // Replace with Chrome AI API summarization
-            const summary = "Summary: " + comments;
-            sendResponse({ summary });
-        });
-        return true; // Keep the message channel open for async response
-    }
-    if (request.action == "getVideoInfo") {
-        getVideoInfo(sendResponse);
+    if (request.action === "videoChanged") {
+        chrome.runtime.sendMessage({
+            action: MESSAGE_TYPES.UPDATE_SIDE_PANEL,
+            videoInfo: request.videoInfo
+        })
         return true;
-    }
-    if (request.action === "generateComment") {
-        handleGenerateComment(request, sendResponse);
-        return true; // Return true immediately to keep the message port open
     }
 });
 
